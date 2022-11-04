@@ -1,6 +1,7 @@
 package dingtalk
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -46,6 +47,7 @@ func (api *API) Update(conf *config.Config, tmpl *template.Template) {
 		Transport: &http.Transport{
 			Proxy:             http.ProxyFromEnvironment,
 			DisableKeepAlives: true,
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
 		},
 	}
 }
