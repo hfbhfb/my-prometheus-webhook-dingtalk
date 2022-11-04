@@ -1,6 +1,11 @@
 FROM busybox:uclibc
 COPY prometheus-webhook-dingtalk /bin/
-COPY contrib/k8s/config/config.yaml /etc/prometheus-webhook-dingtalk/
+
+COPY config.example.yml                 /etc/prometheus-webhook-dingtalk/config.yml
+COPY contrib                            /etc/prometheus-webhook-dingtalk/
+COPY template/default.tmpl              /etc/prometheus-webhook-dingtalk/template/default.tmpl
+
+
 WORKDIR /etc/prometheus-webhook-dingtalk/
 CMD        [ "/bin/prometheus-webhook-dingtalk", "--config.file=/etc/prometheus-webhook-dingtalk/config.yml" ]
 
