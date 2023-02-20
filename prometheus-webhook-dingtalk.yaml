@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus-webhook-dingtalk
+  name: prometheus-webhook-dingtalk
+  namespace: monitoring
+  #需要和alertmanager在同一个namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-webhook-dingtalk
+  template:
+    metadata:
+      labels:
+        app: prometheus-webhook-dingtalk
+    spec:
+      containers:
+      - image: hefabao/prometheus-webhook-dingtalk:v0.0.8
+        name: prometheus-webhook-dingtalk
+        #上面创建的钉钉机器人hook
+        ports:
+        - containerPort: 8060
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 501m
+            memory: 501Mi
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/prometheus-webhook-dingtalk/
+      imagePullSecrets:
+        - name: IfNotPresent
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-webhook-dingtalk
+            items:
+            - key: "config.yml"
+              path: "config.yml"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus-webhook-dingtalk
+  name: prometheus-webhook-dingtalk
+  namespace: monitoring #需要和alertmanager在同一个namespace
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8060
+  selector:
+    app: prometheus-webhook-dingtalk
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    component: "prometheus-webhook-dingtalk"
+    app: prometheus-webhook-dingtalk
+  name: prometheus-webhook-dingtalk
+  namespace: monitoring
+data:
+  config.yml: |
+    ## Request timeout
+    # timeout: 5s
+    templates:
+      - contrib/templates/*.tmpl
+    targets:
+      webhook1:
+        url: https://oapi.dingtalk.com/robot/send?access_token=a611ce2e561db7217aef913a14a2b80a89f747179d0b9cf32f61e6dc8d367dd8
+        mention:
+          all: true
+        message:
+          #title: '{{ template "legacy.title" . }}'
+          text: '{"msgtype": "text","text": {"content":"123名称:alertname这里替换成你要发送的消息,关键词是名称2ww"},"alertname":"111"}'
+          #text: '{{ template "_ding.link.content" . }}'
+      webhook2:
+        url: https://oapi.dingtalk.com/robot/send?access_token=a611ce2e561db7217aef913a14a2b80a89f747179d0b9cf32f61e6dc8d367dd8
+      webhook_legacy:
+        url: https://oapi.dingtalk.com/robot/send?access_token=a611ce2e561db7217aef913a14a2b80a89f747179d0b9cf32f61e6dc8d367dd8
+
