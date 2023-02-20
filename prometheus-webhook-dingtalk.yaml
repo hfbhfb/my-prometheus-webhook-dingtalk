@@ -34,8 +34,6 @@ spec:
           - name: config-volume
             mountPath: /etc/prometheus-webhook-dingtalk/config.yml
             subPath: config.yml
-      imagePullSecrets:
-        - name: IfNotPresent
       volumes:
         - name: config-volume
           configMap:
