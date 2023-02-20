@@ -1,7 +1,6 @@
 
-image: build
-	docker image build -t hefabao/prometheus-webhook-dingtalk:v0.0.8 .
-	docker push hefabao/prometheus-webhook-dingtalk:v0.0.8
+image: build onlyimage
+	echo "ok"
 
 build:
 	echo "简化只编译go"
@@ -9,5 +8,5 @@ build:
 
 
 onlyimage:
-	docker image build -t hefabao/prometheus-webhook-dingtalk:v0.0.8 .
-	docker push hefabao/prometheus-webhook-dingtalk:v0.0.8
+	docker image build -t hefabao/prometheus-webhook-dingtalk:v0.0.21 . --no-cache
+	docker push hefabao/prometheus-webhook-dingtalk:v0.0.21

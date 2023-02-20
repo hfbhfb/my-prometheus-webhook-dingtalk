@@ -17,7 +17,7 @@ spec:
         app: prometheus-webhook-dingtalk
     spec:
       containers:
-      - image: hefabao/prometheus-webhook-dingtalk:v0.0.8
+      - image: hefabao/prometheus-webhook-dingtalk:v0.0.21
         name: prometheus-webhook-dingtalk
         #上面创建的钉钉机器人hook
         ports:
@@ -25,23 +25,21 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: 100m
+            cpu: 102m
             memory: 100Mi
           limits:
             cpu: 501m
             memory: 501Mi
         volumeMounts:
           - name: config-volume
-            mountPath: /etc/prometheus-webhook-dingtalk/
+            mountPath: /etc/prometheus-webhook-dingtalk/config.yml
+            subPath: config.yml
       imagePullSecrets:
         - name: IfNotPresent
       volumes:
         - name: config-volume
           configMap:
             name: prometheus-webhook-dingtalk
-            items:
-            - key: "config.yml"
-              path: "config.yml"
 ---
 apiVersion: v1
 kind: Service
